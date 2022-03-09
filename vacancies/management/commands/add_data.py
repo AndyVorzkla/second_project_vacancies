@@ -2,6 +2,7 @@ from django.core.management.base import BaseCommand
 import data
 from vacancies.models import Specialty, Company, Vacancy
 
+
 class Command(BaseCommand):
     """
     optional --add_all to update the DataBase with content of data.py

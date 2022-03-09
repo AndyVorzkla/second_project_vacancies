@@ -47,7 +47,6 @@ class Vacancy(models.Model):
         return getattr(SpecialtyChoices, str(self.specialty).split()[-1]).value
 
 
-
 class SpecialtyChoices(Enum):
     frontend = 'Фронтенд'
     backend = 'Бэкенд'

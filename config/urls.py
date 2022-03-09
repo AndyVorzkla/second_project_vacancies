@@ -18,9 +18,7 @@ from django.contrib import admin
 from django.urls import path, include
 
 from config import settings
-from vacancies import views as vacancies_views
-from django.urls import re_path
-
+from vacancies import views as vacancies_views, error_handlers
 
 urlpatterns = [
     path('admin/', admin.site.urls),
@@ -30,3 +28,6 @@ urlpatterns = [
 ]
 if settings.DEBUG:
     urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+
+handler500 = error_handlers.custom_handler500
+handler404 = error_handlers.custom_handler404
