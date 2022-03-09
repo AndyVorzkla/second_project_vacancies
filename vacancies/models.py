@@ -1,3 +1,5 @@
+from enum import Enum
+
 from django.db import models
 
 
@@ -7,7 +9,8 @@ class Specialty(models.Model):
     picture = models.URLField(default='https://place-hold.it/100x60')
 
     def __str__(self):
-        return(f'Specialty {self.code}')
+        return (f'Specialty {self.code}')
+
 
 class Company(models.Model):
     id = models.IntegerField(primary_key=True)
@@ -27,9 +30,9 @@ class Vacancy(models.Model):
         related_name='vacancies'
     )
     company = models.ForeignKey(
-       Company,
-       on_delete=models.CASCADE,
-       related_name='company'
+        Company,
+        on_delete=models.CASCADE,
+        related_name='company'
     )
     skills = models.CharField(max_length=60)
     text = models.TextField()
@@ -37,5 +40,20 @@ class Vacancy(models.Model):
     salary_max = models.IntegerField()
     published_at = models.DateTimeField()
 
+    def skills_as_list(self):
+        return [skill.strip() for skill in self.skills.split(',')]
+
+    def specialty_rus(self):
+        return getattr(SpecialtyChoices, str(self.specialty).split()[-1]).value
 
 
+
+class SpecialtyChoices(Enum):
+    frontend = 'Фронтенд'
+    backend = 'Бэкенд'
+    gamedev = 'Геймдев'
+    devops = 'Девопс'
+    design = 'Дизайн'
+    products = 'Продукты'
+    management = 'Менеджмент'
+    testing = 'Тестирование'
