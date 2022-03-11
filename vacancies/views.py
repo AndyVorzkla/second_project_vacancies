@@ -1,5 +1,6 @@
+from django.shortcuts import render
 from django.views.generic import ListView, DetailView
-from django.views.generic.base import TemplateView
+from django.views.generic.base import TemplateView, View
 from django.http import Http404
 from . import models
 from .models import Vacancy
@@ -36,9 +37,10 @@ class VacanciesByCategory(ListView):
     #     else:
     #         return render(request, self.template_name, self.context)
 
-    def __init__(self, **kwargs):
-        super().__init__(kwargs)
-        self.specialty_code = self.kwargs['category_name']
+    # def __init__(self, **kwargs):
+    #     super().__init__(**kwargs)
+    #     print(self.kwargs)
+    #     self.specialty_code = self.kwargs['category_name']
 
     def get_context_data(self, *, object_list=None, **kwargs):
         context = super().get_context_data(object_list=object_list, **kwargs)
@@ -48,6 +50,7 @@ class VacanciesByCategory(ListView):
 
     def get_queryset(self):
 
+        self.specialty_code = self.kwargs['category_name']
         try:
             queryset = models.Vacancy.objects.filter(
                 specialty=models.Specialty.objects.get(code=self.specialty_code)
@@ -61,10 +64,11 @@ class VacanciesByCategory(ListView):
 class CompanyCard(ListView):
     template_name = 'vacancies/company.html'
     context_object_name = 'vacancies'
+    company_id = None
 
-    def __init__(self, **kwargs):
-        super().__init__(kwargs)
-        self.company_id = self.kwargs['pk']
+    # def __init__(self, **kwargs):
+    #     super().__init__(**kwargs)
+    #     self.company_id = self.kwargs['pk']
 
     def get_context_data(self, *, object_list=None, **kwargs):
         context = super().get_context_data(object_list=object_list, **kwargs)
@@ -72,6 +76,7 @@ class CompanyCard(ListView):
         return context
 
     def get_queryset(self):
+        self.company_id = self.kwargs['pk']
 
         try:
             queryset = models.Vacancy.objects.filter(company=models.Company.objects.get(id=self.company_id))
@@ -88,3 +93,10 @@ class VacancyView(DetailView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data()
         return context
+
+
+class TestView(View):
+
+    def get(self, request, **kwargs):
+        print(request.GET)
+        return render(request, 'vacancies/test.html', context={'pk': kwargs['pk'], 'some_int': kwargs['some_int']})
