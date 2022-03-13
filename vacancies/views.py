@@ -1,9 +1,8 @@
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 from django.views.generic import ListView, DetailView
 from django.views.generic.base import TemplateView, View
-from django.http import Http404
-from . import models
-from .models import Vacancy
+from django.http import Http404, HttpResponseRedirect
+from . import models, forms
 
 
 class MainView(TemplateView):
@@ -17,7 +16,7 @@ class MainView(TemplateView):
 
 
 class AllVacancies(ListView):
-    model = Vacancy
+    model = models.Vacancy
     template_name = 'vacancies/vacancies.html'
     context_object_name = 'vacancies'
 
@@ -30,6 +29,8 @@ class AllVacancies(ListView):
 class VacanciesByCategory(ListView):
     template_name = 'vacancies/vacancies.html'
     context_object_name = 'vacancies'
+    specialty_code = None
+
 
     # def get(self, request, *args, **kwargs):
     #     if kwargs['category_name'] not in [specialty.code for specialty in models.Specialty.objects.all()]:
@@ -44,6 +45,7 @@ class VacanciesByCategory(ListView):
 
     def get_context_data(self, *, object_list=None, **kwargs):
         context = super().get_context_data(object_list=object_list, **kwargs)
+
         context['title'] = models.Specialty.objects.get(code=self.specialty_code).title
 
         return context
@@ -87,16 +89,26 @@ class CompanyCard(ListView):
 
 
 class VacancyView(DetailView):
+    # по дефолту, DetailView сам фильтрует запись по <int:pk>, если он так указан в urls
     template_name = 'vacancies/vacancy.html'
-    model = Vacancy
+    model = models.Vacancy
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data()
         return context
 
 
-class TestView(View):
+def test(request, *args, **kwargs):
+    template_name = 'vacancies/test.html'
+    if request.method.lower() == 'get':
+        return render(request, template_name, context={'form': forms.PostcardForm()})
+    if request.method.lower() == 'post':
+        form = forms.PostcardForm(request.POST)
+        if form.is_valid():
+            print(form.cleaned_data)
+            print(form.data.get)
+            return redirect('test')
+        return render(request, template_name, context={'form': form})
 
-    def get(self, request, **kwargs):
-        print(request.GET)
-        return render(request, 'vacancies/test.html', context={'pk': kwargs['pk'], 'some_int': kwargs['some_int']})
+
+

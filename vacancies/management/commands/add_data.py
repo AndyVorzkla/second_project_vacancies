@@ -35,7 +35,7 @@ class Command(BaseCommand):
                 try:
                     specialty_fk = Specialty.objects.get(code=vacancie['specialty'])
                     company_fk = Company.objects.get(id=vacancie['id'])
-                except Specialty.DoesNotExist or Company.DoesNotExist:
+                except Specialty.DoesNotExist:
                     print('Specialty name error')
                 except Company.DoesNotExist:
                     print('Company name error')

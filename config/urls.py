@@ -24,7 +24,11 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('', vacancies_views.MainView.as_view(), name='home'),
     path('vacancies/', include('vacancies.urls')),
-    path('companies/<str:pk>', vacancies_views.CompanyCard.as_view(), name='company_pk')
+    path('companies/<str:pk>', vacancies_views.CompanyCard.as_view(), name='company_pk'),
+    path('test/', vacancies_views.test, name='test'),
+    path('test/<int:pk>/<str:name>', vacancies_views.test, name='test_with_variables'),
+
+
 ]
 if settings.DEBUG:
     urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
