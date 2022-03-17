@@ -37,8 +37,11 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
 
     'django_extensions',
+    'crispy_forms',
+
 
     'vacancies',
+    'accounts',
 ]
 
 MIDDLEWARE = [
@@ -127,6 +130,14 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
 MEDIA_URL = 'media/'
+
+MEDIA_COMPANY_IMAGE_DIR = 'company_images'
+
+MEDIA_SPECIALITY_IMAGE_DIR = 'speciality_images'
+
+LOGIN_REDIRECT_URL = '/'
+
+LOGOUT_REDIRECT_URL = '/login'
 
 # LOGGING = {
 #     'version': 1,

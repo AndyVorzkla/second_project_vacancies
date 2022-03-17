@@ -1,4 +1,4 @@
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, get_object_or_404
 from django.views.generic import ListView, DetailView
 from django.views.generic.base import TemplateView, View
 from django.http import Http404, HttpResponseRedirect
@@ -12,6 +12,7 @@ class MainView(TemplateView):
         context = super().get_context_data()
         context['vacancies_by_category'] = models.Specialty.objects.all()
         context['companies'] = models.Company.objects.all()
+        print(self.request.user)
         return context
 
 
@@ -29,38 +30,18 @@ class AllVacancies(ListView):
 class VacanciesByCategory(ListView):
     template_name = 'vacancies/vacancies.html'
     context_object_name = 'vacancies'
-    specialty_code = None
-
-
-    # def get(self, request, *args, **kwargs):
-    #     if kwargs['category_name'] not in [specialty.code for specialty in models.Specialty.objects.all()]:
-    #         raise Http404
-    #     else:
-    #         return render(request, self.template_name, self.context)
-
-    # def __init__(self, **kwargs):
-    #     super().__init__(**kwargs)
-    #     print(self.kwargs)
-    #     self.specialty_code = self.kwargs['category_name']
+    specialty = None
 
     def get_context_data(self, *, object_list=None, **kwargs):
         context = super().get_context_data(object_list=object_list, **kwargs)
-
-        context['title'] = models.Specialty.objects.get(code=self.specialty_code).title
+        context['title'] = self.speciality.title
 
         return context
 
     def get_queryset(self):
+        self.speciality = get_object_or_404(models.Specialty, code=self.kwargs['category_name'])
 
-        self.specialty_code = self.kwargs['category_name']
-        try:
-            queryset = models.Vacancy.objects.filter(
-                specialty=models.Specialty.objects.get(code=self.specialty_code)
-            )
-        except models.Specialty.DoesNotExist:
-            raise Http404
-
-        return queryset
+        return self.speciality.vacancies.all()
 
 
 class CompanyCard(ListView):
@@ -92,16 +73,32 @@ class VacancyView(DetailView):
     # по дефолту, DetailView сам фильтрует запись по <int:pk>, если он так указан в urls
     template_name = 'vacancies/vacancy.html'
     model = models.Vacancy
+    extra_context = {'form': forms.Application}
 
     def get_context_data(self, **kwargs):
-        context = super().get_context_data()
+        context = super().get_context_data(**kwargs)
+
         return context
+
+    def post(self, request, *args, **kwargs):
+        form = forms.Application(request.POST)
+        id = self.kwargs['pk']
+        if form.is_valid():
+            data = form.cleaned_data
+            application = models.Application(**data, user=request.user, vacancy=models.Vacancy.objects.get(id=id))
+            application.save()
+            return redirect('send_vacancy', pk=id)
+        else:
+            object = models.Vacancy.objects.get(id=id)
+            return render(request, self.template_name, context={'form': form, 'object': object})
+
+
 
 
 def test(request, *args, **kwargs):
     template_name = 'vacancies/test.html'
     if request.method.lower() == 'get':
-        return render(request, template_name, context={'form': forms.PostcardForm()})
+        return render(request, template_name, context={'form': forms.Application})
     if request.method.lower() == 'post':
         form = forms.PostcardForm(request.POST)
         if form.is_valid():
@@ -109,6 +106,31 @@ def test(request, *args, **kwargs):
             print(form.data.get)
             return redirect('test')
         return render(request, template_name, context={'form': form})
+
+
+class VacancySend(DetailView):
+    template_name = 'vacancies/week4/sent.html'
+    model = models.Vacancy
+
+class MyCompanyStart(TemplateView):
+    template_name = ''
+
+class MyCompanyBlank(TemplateView):
+    template_name = 'vacancies/week4/company-create.html'
+
+class MyCompanyFill(TemplateView):
+    # если есть то MyCompanyFill если нет то MyCompanyBlank
+    template_name = 'vacancies/week4/company-edit.html'
+
+class MyCompanyVacancies(TemplateView):
+    template_name = 'vacancies/week4/vacancy-list.html'
+
+class MyCompanyVacancyBlank(TemplateView):
+    template_name = ''
+
+class MyCompanyVacancyFill(TemplateView):
+    template_name = 'vacancies/week4/vacancy-edit.html'
+
 
 
 

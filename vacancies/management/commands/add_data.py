@@ -1,6 +1,10 @@
+from django.contrib.auth.models import User
 from django.core.management.base import BaseCommand
+
+
 import data
 from vacancies.models import Specialty, Company, Vacancy
+
 
 
 class Command(BaseCommand):
@@ -12,36 +16,34 @@ class Command(BaseCommand):
         parser.add_argument('--add_all', action='store_true', help='Add all data from data.py')
 
     def handle(self, *args, **options):
+        # user = User.objects.get(username='admin') # пользователь админ, как тестовый вариант
         if options['add_all']:
-            for specialty in data.specialties:
-                specialty_save_db = Specialty(
-                    code=specialty['code'],
-                    title=specialty['title'],
-                )
-                specialty_save_db.save()
+            # for specialty in data.specialties:
+            #     specialty_save_db = Specialty(
+            #         code=specialty['code'],
+            #         title=specialty['title'],
+            #     )
+            #     specialty_save_db.save()
 
-            for company in data.companies:
-                company_save_db = Company(
-                    id=company['id'],
-                    name=company['title'],
-                    city=company['location'],
-                    logo=company['logo'],
-                    description=company['description'],
-                    employee_count=company['employee_count'],
-                )
-                company_save_db.save()
+            # for company in data.companies:
+            #     company_save_db = Company(
+            #         name=company['title'],
+            #         city=company['location'],
+            #         description=company['description'],
+            #         employee_count=company['employee_count'],
+            #     )
+            #     company_save_db.save()
 
             for vacancie in data.jobs:
                 try:
                     specialty_fk = Specialty.objects.get(code=vacancie['specialty'])
-                    company_fk = Company.objects.get(id=vacancie['id'])
+                    company_fk = Company.objects.get(pk=vacancie['id'])
                 except Specialty.DoesNotExist:
                     print('Specialty name error')
                 except Company.DoesNotExist:
                     print('Company name error')
 
                 vacancie_save_db = Vacancy(
-                    id=vacancie['id'],
                     title=vacancie['title'],
                     specialty=specialty_fk,
                     company=company_fk,

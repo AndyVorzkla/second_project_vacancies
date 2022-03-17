@@ -1,32 +1,50 @@
 from enum import Enum
 
+from django.contrib.auth.models import User
 from django.db import models
 from django.urls import reverse
-# from mptt.models import MPTTModel, TreeForeignKey #  if we have Tree on ForeignKey. (Вложенность моделей на self)
+from config import settings
+
+
+# from mptt.models import MPTTModel, TreeForeignKey #  use if we have Tree on ForeignKey. (Вложенность моделей на self)
 
 class Specialty(models.Model):
     code = models.CharField(primary_key=True, max_length=30)
     title = models.CharField(max_length=60)
-    picture = models.URLField(default='https://place-hold.it/100x60')
+    picture = models.ImageField(upload_to=settings.MEDIA_SPECIALITY_IMAGE_DIR)
 
     def __str__(self):
         return (f'Specialty {self.code}')
 
 
 class Company(models.Model):
-    id = models.IntegerField(primary_key=True)
     name = models.CharField(max_length=60)
     city = models.CharField(max_length=60)
-    logo = models.URLField(default='https://place-hold.it/100x60')
+    logo = models.ImageField(upload_to=settings.MEDIA_COMPANY_IMAGE_DIR)
     description = models.TextField()
     employee_count = models.IntegerField()
+    owner = models.OneToOneField(
+        User,
+        on_delete=models.SET_NULL,
+        related_name='company',
+        null=True,
+        blank=True
+    )
+
+    def get_absolute_url(self):
+        """
+        Get absolute url, add in admin panel 'view on site' button
+        Other variant to add url in href
+        :return:
+        """
+        return reverse('company_pk', kwargs={'pk': self.id})
+
 
     def __str__(self):
         return f'Company {self.name}'
 
 
 class Vacancy(models.Model):
-    id = models.IntegerField(primary_key=True)
     title = models.CharField(max_length=60)
     specialty = models.ForeignKey(
         Specialty,
@@ -36,9 +54,9 @@ class Vacancy(models.Model):
     company = models.ForeignKey(
         Company,
         on_delete=models.CASCADE,
-        related_name='company'
+        related_name='vacancies'
     )
-    # related_name - имя отображения в админ. панели
+    # verbose_name - имя отображения в админ. панели
     skills = models.CharField(max_length=60)
     text = models.TextField()
     salary_min = models.IntegerField()
@@ -62,7 +80,7 @@ class Vacancy(models.Model):
 
     class Meta:
         verbose_name = 'Вакансии'  # used to display custom name in admin panel. Automaticly add 's' to the end
-        verbose_name_plural = 'Вакансии'  # Fixed that
+        verbose_name_plural = 'Вакансии'  # for multy-word
 
     # class MPTTMeta:
     #     order_insertion_by = ['title']
@@ -85,10 +103,15 @@ class Application(models.Model):
     written_username = models.CharField(max_length=120)
     written_phone = models.IntegerField()
     written_cover_letter = models.TextField()
+    user = models.ForeignKey(
+        User,
+        on_delete=models.SET_NULL,
+        related_name='applications',
+        null=True
+    )
     vacancy = models.ForeignKey(
         Vacancy,
         on_delete=models.SET_NULL,
         null=True,
         related_name='applications'
     )
-    image = models.ImageField
