@@ -1,6 +1,4 @@
 {% extends 'vacancies/Base.html' %}
-{% load crispy_forms_tags %}
-
 {% block container %}
     <main class="container mt-3 pb-5">
         <div class="row mt-5">
@@ -24,7 +22,8 @@
                         {{ object.company.city }}</p>
                     <div style="line-height: 1.8;">
                         <b>{{ object.company.description }}</b>
-                        {{ object.text | safe }}
+                        <p></p>
+                        <p>{{ object.text | safe }}</p>
                     </div>
                     <form action="" method="post" class="card mt-4 mb-3" enctype="multipart/form-data">
                         {% csrf_token %}

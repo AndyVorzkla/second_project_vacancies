@@ -27,9 +27,14 @@ urlpatterns = [
     path('', include('accounts.urls')),
     path('vacancies/', include('vacancies.urls')),
     path('companies/<int:pk>', vacancies_views.CompanyCard.as_view(), name='company_pk'),
-    path('mycompany/', vacancies_views.MyCompanyFill.as_view()),
-    path('mycompany/vacancies/', vacancies_views.MyCompanyVacancies.as_view()),
-    path('mycompany/vacancies/<int:pk>', vacancies_views.MyCompanyVacancyFill.as_view()),
+    path('mycompany/', vacancies_views.MyCompanyFill.as_view(), name='my_company'),
+    path('mycompany/letsstart', vacancies_views.MyCompanyStart.as_view(), name='lets_start'),
+    path('mycompany/create', vacancies_views.MyCompanyCreate.as_view(), name='company_create'),
+    path('mycompany/vacancies/', vacancies_views.MyCompanyVacancies.as_view(), name='company_vacancies'),
+    path('mycompany/vacancies/letsstart', vacancies_views.MyCompanyVacanciesStart.as_view(), name='lets_start_vacancy'),
+    path('mycompany/vacancies/create', vacancies_views.MyCompanyVacancyCreate.as_view(), name='vacancy_create'),
+    path('mycompany/vacancies/<int:pk>', vacancies_views.MyCompanyVacancyFill.as_view(), name='vacancy_edit'),
+    path('mycompany/vacancies/<int:pk>/applications', vacancies_views.ApplicationsView.as_view(), name='applications'),
 
 
     path('test/', vacancies_views.test, name='test'),

@@ -11,7 +11,6 @@ class PostcardForm(forms.Form):
 
 
 class Application(forms.ModelForm):
-
     # def __init__(self, *args, **kwargs):
     #     super().__init__(*args, **kwargs)
     #     self.helper = FormHelper()
@@ -44,4 +43,94 @@ class Application(forms.ModelForm):
 
         }
 
+
+class Company(forms.ModelForm):
+    # logo = forms.ImageField(
+    #     widget=forms.FileInput(attrs={
+    #         'class': 'custom-file-input',
+    #         'type': 'file',
+    #         'id': 'inputGroupFile01',
+    #     })
+    # )
+
+    class Meta:
+        model = Company
+        fields = ('name', 'city', 'description', 'employee_count', 'logo')
+        widgets = {
+            'name': forms.TextInput(attrs={
+                'class': 'form-control',
+                'id': 'companyName',
+                'type': 'text',
+            }),
+            'city': forms.TextInput(attrs={
+                'class': 'form-control',
+                'id': 'companyLocation',
+                'type': 'text',
+            }),
+            'logo_update': forms.FileInput(attrs={
+                'class': 'custom-file-input',
+                'type': 'file',
+                'id': 'inputGroupFile01'
+            }),
+
+            'logo': forms.FileInput(attrs={
+                'class': 'custom-file-input',
+                'type': 'file',
+                'id': 'inputGroupFile01',
+            }),
+
+            'description': forms.Textarea(attrs={
+                'class': 'form-control',
+                'id': 'companyInfo',
+                'style': 'color:#000;',
+                'rows': 4
+            }),
+            'employee_count': forms.TextInput(attrs={
+                'class': 'form-control',
+                'id': 'companyTeam',
+                'type': 'text',
+            }),
+
+        }
+
+
+class VacancyForm(forms.ModelForm):
+
+    class Meta:
+        model = Vacancy
+        fields = ('title', 'specialty', 'skills', 'text', 'salary_min', 'salary_max')
+        widgets = {
+            'title': forms.TextInput(attrs={
+                'class': 'form-control',
+                'id': 'vacancyTitle',
+                'type': 'text',
+            }),
+            'specialty': forms.Select(attrs={
+                'class': 'form-control',
+                'id': 'userSpecialization',
+            }),
+            'salary_min': forms.TextInput(attrs={
+                'class': 'form-control',
+                'id': 'vacancySalaryMin',
+                'type': 'text',
+            }),
+            'salary_max': forms.TextInput(attrs={
+                'class': 'form-control',
+                'id': 'vacancySalaryMax',
+                'type': 'text',
+            }),
+            'skills': forms.Textarea(attrs={
+                'class': 'form-control',
+                'id': 'vacancySkills',
+                'style': 'color:#000;',
+                'rows': 3
+            }),
+            'text': forms.Textarea(attrs={
+                'class': 'form-control',
+                'id': 'vacancyDescription',
+                'style': 'color:#000;',
+                'rows': 13
+            }),
+
+        }
 

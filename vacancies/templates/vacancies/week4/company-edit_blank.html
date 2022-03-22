@@ -2,16 +2,13 @@
 {% block content %}
 <main class="container mt-3 pb-5">
     <div class="row mt-5">
-        {% include 'vacancies/week4/Left_menu.html' %}
         <div class="col-12 col-lg-8">
             <div class="card">
                 <div class="card-body px-4 pb-4">
                     <!-- Tab -->
                     <section class="tab-pane fade show active">
                         <h2 class="h4 pt-2 pb-3">Информация о&nbsp;компании</h2>
-                        <p class="alert alert-info" role="alert">
-                            Информация о компании обновлена
-                        </p>
+
                         <form action="" method="post" enctype="multipart/form-data">
                             {% csrf_token %}
                             <div class="row">
@@ -48,6 +45,7 @@
                                         <label class="mb-2 text-dark" for="companyTeam">Количество человек в
                                             компании</label>
                                         {{ form.employee_count}}
+                                        {{ form.errors.employee_count }}
                                     </div>
                                 </div>
                                 <div class="col-12 col-md-6">

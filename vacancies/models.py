@@ -14,13 +14,13 @@ class Specialty(models.Model):
     picture = models.ImageField(upload_to=settings.MEDIA_SPECIALITY_IMAGE_DIR)
 
     def __str__(self):
-        return (f'Specialty {self.code}')
+        return (f'{self.title}')
 
 
 class Company(models.Model):
     name = models.CharField(max_length=60)
     city = models.CharField(max_length=60)
-    logo = models.ImageField(upload_to=settings.MEDIA_COMPANY_IMAGE_DIR)
+    logo = models.ImageField(upload_to=settings.MEDIA_COMPANY_IMAGE_DIR, blank=True, null=True)
     description = models.TextField()
     employee_count = models.IntegerField()
     owner = models.OneToOneField(
@@ -61,7 +61,7 @@ class Vacancy(models.Model):
     text = models.TextField()
     salary_min = models.IntegerField()
     salary_max = models.IntegerField()
-    published_at = models.DateTimeField()
+    published_at = models.DateTimeField(auto_now_add=True)
 
     def skills_as_list(self):
         return [skill.strip() for skill in self.skills.split(',')]
@@ -115,3 +115,6 @@ class Application(models.Model):
         null=True,
         related_name='applications'
     )
+
+    def __str__(self):
+        return f'Application with id {self.id}'

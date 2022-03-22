@@ -18,21 +18,21 @@ class Command(BaseCommand):
     def handle(self, *args, **options):
         # user = User.objects.get(username='admin') # пользователь админ, как тестовый вариант
         if options['add_all']:
-            # for specialty in data.specialties:
-            #     specialty_save_db = Specialty(
-            #         code=specialty['code'],
-            #         title=specialty['title'],
-            #     )
-            #     specialty_save_db.save()
-
-            # for company in data.companies:
-            #     company_save_db = Company(
-            #         name=company['title'],
-            #         city=company['location'],
-            #         description=company['description'],
-            #         employee_count=company['employee_count'],
-            #     )
-            #     company_save_db.save()
+            for specialty in data.specialties:
+                specialty_save_db = Specialty(
+                    code=specialty['code'],
+                    title=specialty['title'],
+                )
+                specialty_save_db.save()
+            #
+            for company in data.companies:
+                company_save_db = Company(
+                    name=company['title'],
+                    city=company['location'],
+                    description=company['description'],
+                    employee_count=company['employee_count'],
+                )
+                company_save_db.save()
 
             for vacancie in data.jobs:
                 try:
