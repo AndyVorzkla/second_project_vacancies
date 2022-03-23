@@ -1,7 +1,5 @@
-from crispy_forms.helper import FormHelper
-from crispy_forms.layout import Submit
 from django import forms
-from vacancies.models import *
+from vacancies import models
 
 
 class PostcardForm(forms.Form):
@@ -23,7 +21,7 @@ class Application(forms.ModelForm):
     #     self.helper.field_class = 'form-control'
 
     class Meta:
-        model = Application
+        model = models.Application
         fields = ('written_username', 'written_phone', 'written_cover_letter')
         widgets = {
             'written_username': forms.TextInput(attrs={
@@ -54,7 +52,7 @@ class Company(forms.ModelForm):
     # )
 
     class Meta:
-        model = Company
+        model = models.Company
         fields = ('name', 'city', 'description', 'employee_count', 'logo')
         widgets = {
             'name': forms.TextInput(attrs={
@@ -95,9 +93,8 @@ class Company(forms.ModelForm):
 
 
 class VacancyForm(forms.ModelForm):
-
     class Meta:
-        model = Vacancy
+        model = models.Vacancy
         fields = ('title', 'specialty', 'skills', 'text', 'salary_min', 'salary_max')
         widgets = {
             'title': forms.TextInput(attrs={
@@ -133,4 +130,3 @@ class VacancyForm(forms.ModelForm):
             }),
 
         }
-

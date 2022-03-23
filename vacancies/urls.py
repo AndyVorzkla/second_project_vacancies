@@ -7,6 +7,4 @@ urlpatterns = [
     path('<int:pk>/send', vacancies_views.VacancySend.as_view(), name='send_vacancy'),
     path('cat/<str:category_name>', vacancies_views.VacanciesByCategory.as_view(), name='all_vacancies_by_category'),
 
-
 ]
-

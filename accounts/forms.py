@@ -1,6 +1,4 @@
 from django import forms
-from django.contrib.auth.models import User
-from vacancies.models import *
 
 
 class SignUpForm(forms.Form):
@@ -44,7 +42,3 @@ class RegistrationForm(SignUpForm):
             'id': 'inputSurname'
         })
     )
-
-
-
-

@@ -35,13 +35,6 @@ urlpatterns = [
     path('mycompany/vacancies/create', vacancies_views.MyCompanyVacancyCreate.as_view(), name='vacancy_create'),
     path('mycompany/vacancies/<int:pk>', vacancies_views.MyCompanyVacancyFill.as_view(), name='vacancy_edit'),
     path('mycompany/vacancies/<int:pk>/applications', vacancies_views.ApplicationsView.as_view(), name='applications'),
-
-
-    path('test/', vacancies_views.test, name='test'),
-    path('test/<int:pk>/<str:name>', vacancies_views.test, name='test_with_variables'),
-
-
-
 ]
 if settings.DEBUG:
     urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

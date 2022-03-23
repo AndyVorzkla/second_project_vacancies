@@ -5,4 +5,3 @@ admin.site.register(models.Specialty)
 admin.site.register(models.Company)
 admin.site.register(models.Vacancy)
 admin.site.register(models.Application)
-

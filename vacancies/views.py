@@ -1,10 +1,9 @@
-from pyexpat.errors import messages
 from django.core.exceptions import ObjectDoesNotExist
 from django.db.models import Count
 from django.shortcuts import render, redirect, get_object_or_404
 from django.views.generic import ListView, DetailView, UpdateView
 from django.views.generic.base import TemplateView, View
-from django.http import Http404, HttpResponseRedirect
+from django.http import Http404
 from . import models, forms
 
 
@@ -72,7 +71,7 @@ class CompanyCard(ListView):
 
 
 class VacancyView(DetailView):
-    # по дефолту, DetailView сам фильтрует запись по <int:pk>, если он так указан в urls
+    # по дефолту, DetailView сам фильтрует запись по <int:pk>, если pk указан в urls
     template_name = 'vacancies/vacancy.html'
     model = models.Vacancy
     extra_context = {'form': forms.Application}
@@ -85,27 +84,19 @@ class VacancyView(DetailView):
     def post(self, request, *args, **kwargs):
         form = forms.Application(request.POST)
         id = self.kwargs['pk']
+        object = models.Vacancy.objects.get(id=id)
+        exist_user = models.Application.objects.filter(vacancy__id=id).filter(user=request.user).exists()
         if form.is_valid():
             data = form.cleaned_data
+            if exist_user:
+                # Возможность добавления ошибки не выходит на пустой форме (ошибка с отсутсвием cleaned_Data)
+                form.add_error('written_username', 'Отклик уже создан')
+                return render(request, self.template_name, context={'form': form, 'object': object})
             application = models.Application(**data, user=request.user, vacancy=models.Vacancy.objects.get(id=id))
             application.save()
             return redirect('send_vacancy', pk=id)
         else:
-            object = models.Vacancy.objects.get(id=id)
             return render(request, self.template_name, context={'form': form, 'object': object})
-
-
-def test(request, *args, **kwargs):
-    template_name = 'vacancies/test.html'
-    if request.method.lower() == 'get':
-        return render(request, template_name, context={'form': forms.Application})
-    if request.method.lower() == 'post':
-        form = forms.PostcardForm(request.POST)
-        if form.is_valid():
-            print(form.cleaned_data)
-            print(form.data.get)
-            return redirect('test')
-        return render(request, template_name, context={'form': form})
 
 
 class VacancySend(DetailView):
@@ -116,6 +107,14 @@ class VacancySend(DetailView):
 class MyCompanyStart(TemplateView):
     template_name = 'vacancies/week4/company-create.html'
 
+    def get(self, request, *args, **kwargs):
+        try:
+            company = request.user.company
+            return redirect('my_company')  # если компани уже есть, то отправляет обратно к редактированию
+
+        except ObjectDoesNotExist:
+            return render(request, template_name=self.template_name)
+
 
 class MyCompanyCreate(TemplateView):
     template_name = 'vacancies/week4/company-edit_blank.html'
@@ -123,7 +122,7 @@ class MyCompanyCreate(TemplateView):
     def get(self, request, *args, **kwargs):
         try:
             company = request.user.company
-            return redirect('my_company') # если компани уже есть, то отправляет обратно к редактированию
+            return redirect('my_company')  # если компани уже есть, то отправляет обратно к редактированию
 
         except ObjectDoesNotExist:
             form = forms.Company()
@@ -199,7 +198,7 @@ class MyCompanyVacancies(View):
             }
             return render(request, template_name=self.template_name, context=context)
         else:
-            return redirect('lets_start_vacancy') # редирект на создание компании
+            return redirect('lets_start_vacancy')  # редирект на создание вакансии
 
 
 class MyCompanyVacanciesStart(TemplateView):
@@ -245,11 +244,6 @@ class ApplicationsView(ListView):
 
     def get_queryset(self):
         self.vacancy = get_object_or_404(models.Vacancy, pk=self.kwargs['pk'])
-        if self.vacancy.company.owner != self.request.user: # как итерироваться если у юзера будет много компаний
-            raise Http404()
+        if self.vacancy.company.owner != self.request.user:  # как итерироваться если у юзера будет много компаний
+            raise Http404('Пользователь не владеет этой компанией')
         return self.vacancy.applications.all()
-
-
-
-
-

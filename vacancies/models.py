@@ -39,7 +39,6 @@ class Company(models.Model):
         """
         return reverse('company_pk', kwargs={'pk': self.id})
 
-
     def __str__(self):
         return f'Company {self.name}'
 
@@ -81,6 +80,7 @@ class Vacancy(models.Model):
     class Meta:
         verbose_name = 'Вакансии'  # used to display custom name in admin panel. Automaticly add 's' to the end
         verbose_name_plural = 'Вакансии'  # for multy-word
+        ordering = ['-published_at']
 
     # class MPTTMeta:
     #     order_insertion_by = ['title']
